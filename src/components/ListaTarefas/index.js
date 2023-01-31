@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { TarefasConcluidas } from "../TarefasConcluidas/TarefasConcluidas";
 import {
   InputContainer,
   ListaContainer,
@@ -7,13 +8,14 @@ import {
   TaskInput,
   AddTaskButton,
   RemoveButton,
-  LinhaHorizontal
+  LinhaHorizontal,
 } from "./styled";
 import bin from "../../assets/bin.png";
 
 export function ListaTarefas() {
   const [lista, setLista] = useState(["Fazer exercícios", "Estudar React"]);
   const [novaTarefa, setNovaTarefa] = useState("");
+  const [listaTarefaConcluida, setListaTarefaConcluida] = useState([]);
 
   const onChangeTarefa = (event) => {
     setNovaTarefa(event.target.value);
@@ -25,8 +27,16 @@ export function ListaTarefas() {
     setNovaTarefa("");
   };
 
-  const removeTarefa = (tarefa) => {
-    const listaFiltrada = lista.filter((item) => item !== tarefa);
+  const enterTarefa = (e) => {
+    if (e.key === "Enter") {
+      adicionaTarefa();
+    }
+  };
+
+  const removeTarefa = (tarefa, index) => {
+    const listaFiltrada = lista.filter((item, indice) => indice !== index);
+    const listaTarefaConcluida2 = lista.filter((item, indice) => indice === index);
+    setListaTarefaConcluida([...listaTarefaConcluida, listaTarefaConcluida2]);
     setLista(listaFiltrada);
   };
 
@@ -37,6 +47,7 @@ export function ListaTarefas() {
           placeholder="Digite aqui uma tarefa"
           value={novaTarefa}
           onChange={onChangeTarefa}
+          onKeyPress={(e) => enterTarefa(e)}
         />
         <AddTaskButton onClick={adicionaTarefa}>Adicionar</AddTaskButton>
       </InputContainer>
@@ -46,7 +57,7 @@ export function ListaTarefas() {
             return (
               <Tarefa key={index}>
                 <p>{tarefa}</p>
-                <RemoveButton onClick={() => removeTarefa(tarefa)}>
+                <RemoveButton onClick={() => removeTarefa(tarefa, index)}>
                   <img src={bin} alt="" width="16px" />
                 </RemoveButton>
               </Tarefa>
@@ -54,7 +65,8 @@ export function ListaTarefas() {
           })}
         </ul>
       </ListaContainer>
-      <LinhaHorizontal/>
+      <LinhaHorizontal />
+      <TarefasConcluidas listaTarefaConcluida={listaTarefaConcluida}/>
     </ListaTarefasContainer>
   );
 }
